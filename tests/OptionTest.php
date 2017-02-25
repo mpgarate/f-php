@@ -7,6 +7,26 @@ use FPHP\Opt;
 use FPHP\UnwrappingNoneException;
 
 class OptionTest extends TestCase {
+    public function testIsSome_trueForSome() {
+        $opt = Opt::some('val');
+        $this->assertEquals(true, $opt->isSome());
+    }
+
+    public function testIsSome_falseForNone() {
+        $opt = Opt::none();
+        $this->assertEquals(false, $opt->isSome());
+    }
+
+    public function testIsNone_trueForNone() {
+        $opt = Opt::none();
+        $this->assertEquals(true, $opt->isNone());
+    }
+
+    public function testIsNone_falseForSome() {
+        $opt = Opt::some('val');
+        $this->assertEquals(false, $opt->isNone());
+    }
+
     public function testUnwrap_getsValueForSome() {
         $val = 'val_sentinel';
         $opt = Opt::some($val);
@@ -49,6 +69,32 @@ class OptionTest extends TestCase {
         $fallback = 'fallback_sentinel';
         $opt = Opt::none();
         $this->assertEquals($fallback, $opt->unwrapOr($fallback));
+    }
+
+    public function testUnwrapOrElse_callsCallbackForNone() {
+        $opt = Opt::none();
+        $callback_sentinel = 'callback_sentinel';
+
+        $this->assertEquals(
+            $callback_sentinel,
+            $opt->unwrapOrElse(function() use ($callback_sentinel) {
+                return $callback_sentinel;
+            })
+        );
+    }
+
+    public function testUnwrapOrElse_doesNotCallCallbackForSome() {
+        $val = 'val_sentinel';
+        $opt = Opt::some($val);
+
+        $callback_sentinel = 'callback_sentinel';
+
+        $this->assertEquals(
+            $val,
+            $opt->unwrapOrElse(function() use ($callback_sentinel) {
+                return $callback_sentinel;
+            })
+        );
     }
 
     public function testMap_appliesFunctionToValueForSome() {

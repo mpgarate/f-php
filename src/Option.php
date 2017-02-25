@@ -17,8 +17,10 @@ interface Option {
     function unwrap();
     function expect(string $message);
     function unwrapOr($fallback_val);
+    function unwrapOrElse($fallback_val);
     function map(callable $f): Option;
     function flatMap(callable $f): Option;
+    function isSome(): bool;
 }
 
 class OptionNone implements Option {
@@ -34,12 +36,24 @@ class OptionNone implements Option {
         return $fallback_val;
     }
 
+    public function unwrapOrElse($callback) {
+        return $callback();
+    }
+
     public function map(callable $callback): Option {
         return $this;
     }
 
     public function flatMap(callable $f): Option {
         return $this;
+    }
+
+    public function isSome(): bool {
+        return false;
+    }
+
+    public function isNone(): bool {
+        return true;
     }
 }
 
@@ -66,11 +80,23 @@ class OptionSome implements Option {
         return $this->val;
     }
 
+    public function unwrapOrElse($callback) {
+        return $this->val;
+    }
+
     public function map(callable $callback): Option {
         return Opt::some($callback($this->val));
     }
 
     public function flatMap(callable $callback): Option {
         return $callback($this->val);
+    }
+
+    public function isSome(): bool {
+        return true;
+    }
+
+    public function isNone(): bool {
+        return false;
     }
 }
