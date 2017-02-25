@@ -59,16 +59,16 @@ class OptionTest extends TestCase {
 
     public function testUnwrapOr_returnsValueForSome() {
         $val = 'val_sentinel';
-        $fallback = 'fallback_sentinel';
+        $default = 'default_sentinel';
         $opt = Opt::some($val);
-        $this->assertEquals($val, $opt->unwrapOr($fallback));
+        $this->assertEquals($val, $opt->unwrapOr($default));
     }
 
     public function testUnwrapOr_returnsFallbackForNone() {
         $val = 'val_sentinel';
-        $fallback = 'fallback_sentinel';
+        $default = 'default_sentinel';
         $opt = Opt::none();
-        $this->assertEquals($fallback, $opt->unwrapOr($fallback));
+        $this->assertEquals($default, $opt->unwrapOr($default));
     }
 
     public function testUnwrapOrElse_callsCallbackForNone() {

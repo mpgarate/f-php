@@ -3,27 +3,74 @@ namespace FPHP;
 
 abstract class Opt {
     public static function none(): Option {
-        return new OptionNone();
+        return new None();
     }
 
     public static function some($val): Option {
-        return new OptionSome($val);
+        return new Some($val);
     }
 }
 
 class UnwrappingNoneException extends \Exception {};
 
 interface Option {
+    /**
+     * @throws UnwrappingNoneException
+     *
+     * @return mixed the value if present
+     */
     function unwrap();
+
+    /**
+     * @param string message to use in exception
+     *
+     * @throws Exception
+     *
+     * @return mixed the value if present
+     */
     function expect(string $message);
-    function unwrapOr($fallback_val);
-    function unwrapOrElse($fallback_val);
+
+    /**
+     * @param mixed default the fallback value
+     *
+     * @return mixed the value if present, else the provided default
+     */
+    function unwrapOr($default);
+
+    /**
+     * @param callable returning a default value
+     *
+     * @return mixed the value if present, else the result from running the
+     *   provided callback. 
+     */
+    function unwrapOrElse(callable $f);
+
+    /**
+     * @param callable returning a new value
+     *
+     * @return Option None or Some wrapping the result of the callback
+     */
     function map(callable $f): Option;
+
+    /**
+     * @param callable returning an Option
+     *
+     * @return Option None or the result of the callback
+     */
     function flatMap(callable $f): Option;
+
+    /*
+     * @return bool is there a value?
+     */
     function isSome(): bool;
+
+    /**
+     * @return bool is there no value?
+     */
+    function isNone(): bool;
 }
 
-class OptionNone implements Option {
+class None implements Option {
     public function unwrap() {
         throw new UnwrappingNoneException("unwrapping a none value");
     }
@@ -32,15 +79,15 @@ class OptionNone implements Option {
         throw new \Exception($message);
     }
 
-    public function unwrapOr($fallback_val) {
-        return $fallback_val;
+    public function unwrapOr($default) {
+        return $default;
     }
 
-    public function unwrapOrElse($callback) {
-        return $callback();
+    public function unwrapOrElse(callable $f) {
+        return $f();
     }
 
-    public function map(callable $callback): Option {
+    public function map(callable $f): Option {
         return $this;
     }
 
@@ -65,7 +112,7 @@ trait HoldsValue {
     }
 }
 
-class OptionSome implements Option {
+class Some implements Option {
     use HoldsValue;
 
     public function unwrap() {
@@ -76,20 +123,20 @@ class OptionSome implements Option {
         return $this->val;
     }
 
-    public function unwrapOr($fallback_val) {
+    public function unwrapOr($default) {
         return $this->val;
     }
 
-    public function unwrapOrElse($callback) {
+    public function unwrapOrElse(callable $f) {
         return $this->val;
     }
 
-    public function map(callable $callback): Option {
-        return Opt::some($callback($this->val));
+    public function map(callable $f): Option {
+        return Opt::some($f($this->val));
     }
 
-    public function flatMap(callable $callback): Option {
-        return $callback($this->val);
+    public function flatMap(callable $f): Option {
+        return $f($this->val);
     }
 
     public function isSome(): bool {
