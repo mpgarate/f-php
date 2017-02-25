@@ -3,8 +3,8 @@
 require './vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
-use Option\Opt;
-use Option\UnwrappingNoneException;
+use FPHP\Opt;
+use FPHP\UnwrappingNoneException;
 
 class OptionTest extends TestCase {
     public function testUnwrap_getsValueForSome() {

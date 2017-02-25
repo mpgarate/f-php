@@ -1,5 +1,5 @@
 <?php
-namespace Option;
+namespace FPHP;
 
 abstract class Opt {
     public static function none(): Option {

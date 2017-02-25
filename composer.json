@@ -5,6 +5,7 @@
     "autoload": {
         "classmap": [
             "src/"
-        ]
+        ],
+        "psr-4": {"FPHP\\": "src/"}
     }
 }
