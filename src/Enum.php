@@ -5,20 +5,44 @@ namespace FPHP;
 
 require './vendor/autoload.php';
 
+class MatchCase {
+    private $predicate;
+    public $callback;
+
+    public function __construct(callable $predicate, callable $callback) {
+        $this->predicate = $predicate;
+        $this->callback = $callback;
+    }
+
+    public function predicate($val): bool {
+        return ($this->predicate)($val);
+    }
+}
+
 trait Matchable {
     abstract public static function vals(): array;
+    abstract public static function isValue($val): array;
     abstract public static function name($val): array;
 
     private function getCallbackForVal(int $val, array $cases): Option {
-        return Iter::findFirst($cases, function(array $case) use ($val) {
-            list($predicate, $callback) = $case;
-            return $predicate === $val || (is_callable($predicate) && $predicate($val));
+        return Iter::findFirst($cases, function(MatchCase $case) use ($val) {
+            return $case->predicate($val);
         })->map(function($case) {
-            return $case[1]; // the callback
+            return $case->callback;
         });
     }
 
     public function match(...$cases) {
+        $cases = Iter::map($cases, function($case) {
+            list($predicate, $callback) = $case;
+
+            if (self::isValue($predicate)) {
+                return new MatchCase(Predicate::StrictEquals($predicate), $callback);
+            }
+
+            return new MatchCase($predicate, $callback);
+        });
+
         $missing = [];
         foreach (static::vals() as $val) {
             if ($this->getCallbackForVal($val, $cases)->isNone()) {
@@ -55,6 +79,10 @@ trait Enum {
 
     public static function vals(): array {
         return array_keys(static::valsToNames());
+    }
+
+    public static function isValue($val): bool {
+        return is_int($val) && isset(static::valsToNames()[$val]);
     }
 
     public static function names(): array {

@@ -13,4 +13,8 @@ abstract class Iter {
 
         return Opt::none();
     }
+
+    public static function map(array $xs, callable $f): array {
+        return array_map($f, $xs);
+    }
 }
