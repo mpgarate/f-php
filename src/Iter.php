@@ -19,7 +19,7 @@ abstract class Iter {
     }
 
     public static function filter(array $xs, callable $f): array {
-        return array_filter($xs, $f);
+        return array_values(array_filter($xs, $f));
     }
 }
 

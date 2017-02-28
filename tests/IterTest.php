@@ -10,14 +10,14 @@ use FPHP\Opt;
 
 class IterTest extends TestCase {
     /**
-     * @dataProvider provideForFindFirst
+     * @dataProvider provideForTestFindFirst
      */
     public function testFindFirst($xs, $f, $expected) {
         $result = Iter::findFirst($xs, $f);
         $this->assertEquals($expected, $result);
     }
 
-    public function provideForFindFirst() {
+    public function provideForTestFindFirst() {
         return [
             'always true' => [
                 $xs = [5, 6, 7],
@@ -38,6 +38,72 @@ class IterTest extends TestCase {
                 $xs = [],
                 $f = function($x) { return $x === 6; },
                 $expected = opt::none(),
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideForTestMap
+     */
+    public function testMap($xs, $f, $expected) {
+        $result = Iter::map($xs, $f);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function provideForTestMap() {
+        return [
+            'always true' => [
+                $xs = [5, 6, 7],
+                $f = function($x) { return $x * 2; },
+                $expected = [10, 12, 14],
+            ],
+            'specific item' => [
+                $xs = [5, 6, 7],
+                $f = function($x) { return $x === 6; },
+                $expected = [false, true, false],
+            ],
+            'return some nulls' => [
+                $xs = [5, 6, 7],
+                $f = function($x) { return null; },
+                $expected = [null, null, null],
+            ],
+            'no items' => [
+                $xs = [],
+                $f = function($x) { throw new Exception("I should not be called"); },
+                $expected = [],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideForTestFilter
+     */
+    public function testFilter($xs, $f, $expected) {
+        $result = Iter::filter($xs, $f);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function provideForTestFilter() {
+        return [
+            'always true' => [
+                $xs = [5, 6, 7],
+                $f = function($x) { return $x > 5; },
+                $expected = [6, 7],
+            ],
+            'specific item' => [
+                $xs = [5, 6, 7],
+                $f = function($x) { return $x === 6; },
+                $expected = [6],
+            ],
+            'nothing matches' => [
+                $xs = [5, 6, 7],
+                $f = function($x) { return false; },
+                $expected = [],
+            ],
+            'no items' => [
+                $xs = [],
+                $f = function($x) { throw new Exception("I should not be called"); },
+                $expected = [],
             ],
         ];
     }
