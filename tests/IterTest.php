@@ -52,7 +52,7 @@ class IterTest extends TestCase {
 
     public function provideForTestMap() {
         return [
-            'always true' => [
+            'multiply by 2' => [
                 $xs = [5, 6, 7],
                 $f = function($x) { return $x * 2; },
                 $expected = [10, 12, 14],
@@ -85,7 +85,7 @@ class IterTest extends TestCase {
 
     public function provideForTestFilter() {
         return [
-            'always true' => [
+            'get some values' => [
                 $xs = [5, 6, 7],
                 $f = function($x) { return $x > 5; },
                 $expected = [6, 7],
@@ -104,6 +104,37 @@ class IterTest extends TestCase {
                 $xs = [],
                 $f = function($x) { throw new Exception("I should not be called"); },
                 $expected = [],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideForTestFold
+     */
+    public function testFold($xs, $initial, $f, $expected) {
+        $result = Iter::fold($xs, $initial, $f);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function provideForTestFold() {
+        return [
+            'add them up' => [
+                $xs = [1, 2, 3],
+                $initial = 0,
+                $f = function($acc, $x) { return $acc + $x; },
+                $expected = 6,
+            ],
+            'multiply them together' => [
+                $xs = [2, 2, 2],
+                $initial = 1,
+                $f = function($acc, $x) { return $acc * $x; },
+                $expected = 8,
+            ],
+            'no items' => [
+                $xs = [],
+                $initial = 42,
+                $f = function($acc, $x) { throw new Exception("I should not be called"); },
+                $expected = 42,
             ],
         ];
     }
