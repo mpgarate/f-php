@@ -36,18 +36,21 @@ trait Matchable {
         $cases = Iter::map($cases, function($case) {
             list($predicate, $callback) = $case;
 
-            if (self::isValue($predicate)) {
+            if (is_int($predicate) && self::isValue($predicate)) {
                 return new MatchCase(Predicate::StrictEquals($predicate), $callback);
             }
 
             return new MatchCase($predicate, $callback);
         });
 
-        $missing = Iter::map(Iter::filter(static::vals(), function($val) use ($cases) {
-            return $this->getCallbackForVal($val, $cases)->isNone();
-        }), function($val) {
-            return self::name($val);
-        });
+        $missing = Iter::chain(static::vals())
+            ->filter(function($val) use ($cases) {
+                return $this->getCallbackForVal($val, $cases)->isNone();
+            })
+            ->map(function($val) {
+                return self::name($val);
+            })
+            ->collect();
 
         if (!empty($missing)) {
             $missing_str = implode(",", $missing);
@@ -80,8 +83,8 @@ trait Enum {
         return array_keys(static::valsToNames());
     }
 
-    public static function isValue($val): bool {
-        return is_int($val) && isset(static::valsToNames()[$val]);
+    public static function isValue(int $val): bool {
+        return isset(static::valsToNames()[$val]);
     }
 
     public static function names(): array {

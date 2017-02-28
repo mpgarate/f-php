@@ -21,5 +21,13 @@ abstract class Iter {
     public static function filter(array $xs, callable $f): array {
         return array_values(array_filter($xs, $f));
     }
+
+    public static function chain(array $xs): Chain {
+        return new Chain($xs);
+    }
+
+    public static function fold(array $xs, $initial, callable $fn) {
+        return array_reduce($xs, $fn, $initial);
+    }
 }
 
