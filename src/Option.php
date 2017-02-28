@@ -12,12 +12,12 @@ abstract class Opt {
         return new Some($val);
     }
 
-    public static function from($val_or_null): Option {
-        if ($val_or_null === null) {
+    public static function from($val = null): Option {
+        if ($val === null) {
             return new None();
         }
 
-        return new Some($val_or_null);
+        return new Some($val);
     }
 }
 
