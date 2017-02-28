@@ -17,4 +17,9 @@ abstract class Iter {
     public static function map(array $xs, callable $f): array {
         return array_map($f, $xs);
     }
+
+    public static function filter(array $xs, callable $f): array {
+        return array_filter($xs, $f);
+    }
 }
+

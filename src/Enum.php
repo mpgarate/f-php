@@ -43,12 +43,11 @@ trait Matchable {
             return new MatchCase($predicate, $callback);
         });
 
-        $missing = [];
-        foreach (static::vals() as $val) {
-            if ($this->getCallbackForVal($val, $cases)->isNone()) {
-                $missing[]= static::name($val);
-            }
-        }
+        $missing = Iter::map(Iter::filter(static::vals(), function($val) use ($cases) {
+            return $this->getCallbackForVal($val, $cases)->isNone();
+        }), function($val) {
+            return self::name($val);
+        });
 
         if (!empty($missing)) {
             $missing_str = implode(",", $missing);
@@ -56,7 +55,7 @@ trait Matchable {
             throw new \InvalidArgumentException("Missing match case for $missing_str");
         }
 
-        $callback = $this->getCallbackForVal($val, $cases)->unwrap();
+        $callback = $this->getCallbackForVal($this->val, $cases)->unwrap();
 
         return $callback();
     }
