@@ -11,6 +11,14 @@ abstract class Opt {
     public static function some($val): Option {
         return new Some($val);
     }
+
+    public static function from($val_or_null): Option {
+        if ($val_or_null === null) {
+            return new None();
+        }
+
+        return new Some($val_or_null);
+    }
 }
 
 class UnwrappingNoneException extends \Exception {};

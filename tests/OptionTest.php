@@ -5,6 +5,7 @@ require './vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
 use FPHP\Opt;
+use FPHP\Option;
 use FPHP\UnwrappingNoneException;
 
 class OptionTest extends TestCase {
@@ -138,5 +139,59 @@ class OptionTest extends TestCase {
         });
 
         $this->assertEquals($opt, $result);
+    }
+
+    /**
+     * @dataProvider provideForTestConstructFrom
+     */
+    public function testConstructFrom($val, Option $expected) {
+        $opt = Opt::from($val);
+
+        $this->assertEquals($expected, $opt);
+    }
+
+    public function provideForTestConstructFrom() {
+        return [
+            [
+                $val = 1,
+                $expected = Opt::some(1),
+            ],
+            [
+                $val = true,
+                $expected = Opt::some(true),
+            ],
+            [
+                $val = 'false',
+                $expected = Opt::some('false'),
+            ],
+            [
+                $val = false,
+                $expected = Opt::some(false),
+            ],
+            [
+                $val = null,
+                $expected = Opt::none(),
+            ],
+            [
+                $val = 'null',
+                $expected = Opt::some('null'),
+            ],
+            [
+                $val = '',
+                $expected = Opt::some(''),
+            ],
+            [
+                $val = 0,
+                $expected = Opt::some(0),
+            ],
+            [
+                $val = [],
+                $expected = Opt::some([]),
+            ],
+            [
+                $val = new stdClass,
+                $expected = Opt::some(new stdClass),
+            ],
+        ];
     }
 }
