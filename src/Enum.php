@@ -24,6 +24,8 @@ trait Matchable {
     abstract public static function isValue($val): array;
     abstract public static function name($val): array;
 
+    private $val;
+
     private function getCallbackForVal(int $val, array $cases): Option {
         return Iter::findFirst($cases, function(MatchCase $case) use ($val) {
             return $case->predicate($val);
