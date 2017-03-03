@@ -22,16 +22,11 @@ class Color {
             self::YELLOW => 'YELLOW',
         ];
     }
-
-    // TODO: this should return a singleton
-    public static function val(int $val): Color {
-        return new Color($val);
-    }
 }
 
 class EnumTest extends TestCase {
     public function testEnumTypeHint_doesNotThrowError() {
-        $color = Color::val(Color::YELLOW);
+        $color = Color::get(Color::YELLOW);
 
         (function(Color $color): Color {
             return $color;
@@ -51,7 +46,7 @@ class EnumTest extends TestCase {
     }
 
     public function testMatchAny_matchesAValue() {
-        $color = Color::val(Color::YELLOW);
+        $color = Color::get(Color::YELLOW);
 
         $expected_result = 'result_sentinel';
 
@@ -65,7 +60,7 @@ class EnumTest extends TestCase {
     }
 
     public function testMatchOr_doesNotMatchDifferentValue() {
-        $color = Color::val(Color::YELLOW);
+        $color = Color::get(Color::YELLOW);
 
         $expected_result = 'result_sentinel';
 

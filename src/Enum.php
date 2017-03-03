@@ -81,6 +81,17 @@ trait Enum {
         $this->val = $val;
     }
 
+    public static function get(int $val) {
+        static $instances = [];
+
+        if (!isset($instances[$val])) {
+            $o = new static($val);
+            $instances[$val] = $o;
+        }
+
+        return $instances[$val];
+    }
+
     public static function vals(): array {
         return array_keys(static::valsToNames());
     }
