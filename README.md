@@ -20,8 +20,18 @@ function divide(int $numerator, int $denominator): Option {
 }
 
 assert(divide(5, 0)->unwrapOr(0) === 0);
-
 assert(divide(5, 2)->isSome() === true);
+
+$result = divide(10, 2)->map(function(float $n) {
+    return $n * 3;
+})->unwrap();
+assert(15.0 === $result);
+
+$items = ['a' => 1, 'b' => 2];
+$item_a = Opt::from($items['a'] ?? null)->unwrapOr(3);
+assert(1 === $item_a);
+$item_c = Opt::from($items['c'] ?? null)->unwrapOr(3);
+assert(3 === $item_c);
 ```
 
 ## Tuple
