@@ -8,31 +8,31 @@ php toys inspired by function programming
 
 ## Option
 ```php
+use FPHP\Opt;
+use FPHP\Option;
+
 function divide(int $numerator, int $denominator): Option {
-    if ($numerator === 0) {
+    if ($denominator === 0) {
         return Opt::none();
     }
 
     return Opt::some($numerator / $denominator);
 }
 
-// prints 0
-echo divide(5, 0)->unwrapOr(0); 
+assert(divide(5, 0)->unwrapOr(0) === 0);
 
-// prints true
-echo divide(5, 2)->isSome() ? 'true' : 'false;    
+assert(divide(5, 2)->isSome() === true);
 ```
 
 ## Tuple
 ```php
+use FPHP\Tuple;
 
 $point = new Tuple(3, 4);
 
 list($x, $y) = $point;
 
-// prints true
-echo $x == 3 ? 'true' : 'false';
+assert($x === 3);
 
-// prints true
-echo $point[0] == 3 ? 'true' : 'false';
+assert($point[0] === 3);
 ```
