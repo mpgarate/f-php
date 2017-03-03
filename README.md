@@ -8,7 +8,6 @@ php toys inspired by function programming
 
 ## Option
 ```php
-use FPHP\Opt;
 use FPHP\Option;
 
 function divide(int $numerator, int $denominator): Option {
