@@ -11,11 +11,11 @@ abstract class Iter {
     public static function findFirst(array $xs, callable $f): Option {
         foreach ($xs as $x) {
             if ($f($x)) {
-                return Opt::some($x);
+                return Option::some($x);
             }
         }
 
-        return Opt::none();
+        return Option::none();
     }
 
     public static function map(array $xs, callable $f): array {

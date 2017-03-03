@@ -6,7 +6,7 @@ require './vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 
 use FPHP\Iter;
-use FPHP\Opt;
+use FPHP\Option;
 
 class IterTest extends TestCase {
     /**
@@ -22,22 +22,22 @@ class IterTest extends TestCase {
             'always true' => [
                 $xs = [5, 6, 7],
                 $f = function($x) { return true; },
-                $expected = opt::some(5),
+                $expected = Option::some(5),
             ],
             'specific item' => [
                 $xs = [5, 6, 7],
                 $f = function($x) { return $x === 6; },
-                $expected = opt::some(6),
+                $expected = Option::some(6),
             ],
             'item not found' => [
                 $xs = [5, 6, 7],
                 $f = function($x) { return $x === 0; },
-                $expected = opt::none(),
+                $expected = Option::none(),
             ],
             'no items' => [
                 $xs = [],
                 $f = function($x) { return $x === 6; },
-                $expected = opt::none(),
+                $expected = Option::none(),
             ],
         ];
     }

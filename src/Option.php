@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace FPHP;
 
-abstract class Opt {
+class UnwrappingNoneException extends \Exception {};
+
+abstract class Option {
     public static function none(): Option {
         return new None();
     }
@@ -19,17 +21,13 @@ abstract class Opt {
 
         return new Some($val);
     }
-}
 
-class UnwrappingNoneException extends \Exception {};
-
-interface Option {
     /**
      * @throws UnwrappingNoneException
      *
      * @return mixed the value if present
      */
-    function unwrap();
+    abstract public function unwrap();
 
     /**
      * @param string message to use in exception
@@ -38,14 +36,14 @@ interface Option {
      *
      * @return mixed the value if present
      */
-    function expect(string $message);
+    abstract public function expect(string $message);
 
     /**
      * @param mixed default the fallback value
      *
      * @return mixed the value if present, else the provided default
      */
-    function unwrapOr($default);
+    abstract public function unwrapOr($default);
 
     /**
      * @param callable returning a default value
@@ -53,34 +51,34 @@ interface Option {
      * @return mixed the value if present, else the result from running the
      *   provided callback. 
      */
-    function unwrapOrElse(callable $f);
+    abstract public function unwrapOrElse(callable $f);
 
     /**
      * @param callable returning a new value
      *
      * @return Option None or Some wrapping the result of the callback
      */
-    function map(callable $f): Option;
+    abstract public function map(callable $f): Option;
 
     /**
      * @param callable returning an Option
      *
      * @return Option None or the result of the callback
      */
-    function flatMap(callable $f): Option;
+    abstract public function flatMap(callable $f): Option;
 
     /*
      * @return bool is there a value?
      */
-    function isSome(): bool;
+    abstract public function isSome(): bool;
 
     /**
      * @return bool is there no value?
      */
-    function isNone(): bool;
+    abstract public function isNone(): bool;
 }
 
-class None implements Option {
+class None extends Option {
     public function unwrap() {
         throw new UnwrappingNoneException("unwrapping a none value");
     }
@@ -122,7 +120,7 @@ trait HoldsValue {
     }
 }
 
-class Some implements Option {
+class Some extends Option {
     use HoldsValue;
 
     public function unwrap() {
@@ -142,7 +140,7 @@ class Some implements Option {
     }
 
     public function map(callable $f): Option {
-        return Opt::some($f($this->val));
+        return Option::some($f($this->val));
     }
 
     public function flatMap(callable $f): Option {

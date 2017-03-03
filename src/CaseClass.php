@@ -12,7 +12,7 @@ trait CaseClass {
      * @throws NoSuchPropertyException
      */
     public function __call($name, $args) {
-        return Opt::from($this->data[$name] ?? null) 
+        return Option::from($this->data[$name] ?? null) 
             ->unwrapOrElse(function() use ($name) {
                 throw new NoSuchPropertyException("no property $name for this case class");
             });

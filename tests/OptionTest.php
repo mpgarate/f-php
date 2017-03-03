@@ -4,48 +4,47 @@ declare(strict_types=1);
 require './vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
-use FPHP\Opt;
 use FPHP\Option;
 use FPHP\UnwrappingNoneException;
 
 class OptionTest extends TestCase {
     public function testIsSome_trueForSome() {
-        $opt = Opt::some('val');
+        $opt = Option::some('val');
         $this->assertEquals(true, $opt->isSome());
     }
 
     public function testIsSome_falseForNone() {
-        $opt = Opt::none();
+        $opt = Option::none();
         $this->assertEquals(false, $opt->isSome());
     }
 
     public function testIsNone_trueForNone() {
-        $opt = Opt::none();
+        $opt = Option::none();
         $this->assertEquals(true, $opt->isNone());
     }
 
     public function testIsNone_falseForSome() {
-        $opt = Opt::some('val');
+        $opt = Option::some('val');
         $this->assertEquals(false, $opt->isNone());
     }
 
     public function testUnwrap_getsValueForSome() {
         $val = 'val_sentinel';
-        $opt = Opt::some($val);
+        $opt = Option::some($val);
         $this->assertEquals($val, $opt->unwrap());
     }
 
     public function testUnwrap_throwsExceptionForNone() {
         $this->expectException(UnwrappingNoneException::class);
 
-        $opt = Opt::none();
+        $opt = Option::none();
         $opt->unwrap();
     }
 
     public function testExpect_getsValueForSome() {
         $message = 'message_sentinel';
         $val = 'val_sentinel';
-        $opt = Opt::some($val);
+        $opt = Option::some($val);
         $this->assertEquals($val, $opt->expect($message));
     }
 
@@ -55,26 +54,26 @@ class OptionTest extends TestCase {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage($message);
 
-        $opt = Opt::none();
+        $opt = Option::none();
         $opt->expect($message);
     }
 
     public function testUnwrapOr_returnsValueForSome() {
         $val = 'val_sentinel';
         $default = 'default_sentinel';
-        $opt = Opt::some($val);
+        $opt = Option::some($val);
         $this->assertEquals($val, $opt->unwrapOr($default));
     }
 
     public function testUnwrapOr_returnsFallbackForNone() {
         $val = 'val_sentinel';
         $default = 'default_sentinel';
-        $opt = Opt::none();
+        $opt = Option::none();
         $this->assertEquals($default, $opt->unwrapOr($default));
     }
 
     public function testUnwrapOrElse_callsCallbackForNone() {
-        $opt = Opt::none();
+        $opt = Option::none();
         $callback_sentinel = 'callback_sentinel';
 
         $this->assertEquals(
@@ -87,7 +86,7 @@ class OptionTest extends TestCase {
 
     public function testUnwrapOrElse_doesNotCallCallbackForSome() {
         $val = 'val_sentinel';
-        $opt = Opt::some($val);
+        $opt = Option::some($val);
 
         $callback_sentinel = 'callback_sentinel';
 
@@ -101,41 +100,41 @@ class OptionTest extends TestCase {
 
     public function testMap_appliesFunctionToValueForSome() {
         $val = 3;
-        $opt = Opt::some($val);
+        $opt = Option::some($val);
 
         $result = $opt->map(function($n) {
             return $n + 1;
         });
 
-        $this->assertEquals(Opt::some(4), $result);
+        $this->assertEquals(Option::some(4), $result);
     }
 
     public function testMap_returnsNoneForNone() {
-        $opt = Opt::none();
+        $opt = Option::none();
 
         $result = $opt->map(function($n) {
             return $n + 1;
         });
 
-        $this->assertEquals(Opt::none(), $result);
+        $this->assertEquals(Option::none(), $result);
     }
 
     public function testFlatMap_appliesFunctionToValueForSome() {
         $val = 3;
-        $opt = Opt::some($val);
+        $opt = Option::some($val);
 
         $result = $opt->flatMap(function($n) {
-            return Opt::some($n + 1);
+            return Option::some($n + 1);
         });
 
-        $this->assertEquals(Opt::some(4), $result);
+        $this->assertEquals(Option::some(4), $result);
     }
 
     public function testFlatMap_returnsNoneForNone() {
-        $opt = Opt::none();
+        $opt = Option::none();
 
         $result = $opt->flatMap(function($n) {
-            return Opt::some($n + 1);
+            return Option::some($n + 1);
         });
 
         $this->assertEquals($opt, $result);
@@ -145,7 +144,7 @@ class OptionTest extends TestCase {
      * @dataProvider provideForTestConstructFrom
      */
     public function testConstructFrom($val, Option $expected) {
-        $opt = Opt::from($val);
+        $opt = Option::from($val);
 
         $this->assertEquals($expected, $opt);
     }
@@ -154,43 +153,43 @@ class OptionTest extends TestCase {
         return [
             [
                 $val = 1,
-                $expected = Opt::some(1),
+                $expected = Option::some(1),
             ],
             [
                 $val = true,
-                $expected = Opt::some(true),
+                $expected = Option::some(true),
             ],
             [
                 $val = 'false',
-                $expected = Opt::some('false'),
+                $expected = Option::some('false'),
             ],
             [
                 $val = false,
-                $expected = Opt::some(false),
+                $expected = Option::some(false),
             ],
             [
                 $val = null,
-                $expected = Opt::none(),
+                $expected = Option::none(),
             ],
             [
                 $val = 'null',
-                $expected = Opt::some('null'),
+                $expected = Option::some('null'),
             ],
             [
                 $val = '',
-                $expected = Opt::some(''),
+                $expected = Option::some(''),
             ],
             [
                 $val = 0,
-                $expected = Opt::some(0),
+                $expected = Option::some(0),
             ],
             [
                 $val = [],
-                $expected = Opt::some([]),
+                $expected = Option::some([]),
             ],
             [
                 $val = new stdClass,
-                $expected = Opt::some(new stdClass),
+                $expected = Option::some(new stdClass),
             ],
         ];
     }
