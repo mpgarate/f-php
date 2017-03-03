@@ -11,6 +11,10 @@ abstract class Result {
     public static function ok($value): Result {
         return new Ok($value);
     }
+
+    abstract public function isOk(): bool;
+
+    abstract public function isError(): bool;
 }
 
 class Error extends Result {
@@ -21,6 +25,14 @@ class Error extends Result {
         $this->message = $message;
         $this->cause = $cause;
     }
+
+    public function isOk(): bool {
+        return false;
+    }
+
+    public function isError(): bool {
+        return true;
+    }
 }
 
 class Ok extends Result {
@@ -28,5 +40,13 @@ class Ok extends Result {
 
     function __construct($val) {
         $this->val = $val;
+    }
+
+    public function isOk(): bool {
+        return true;
+    }
+
+    public function isError(): bool {
+        return false;
     }
 }
