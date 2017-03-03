@@ -8,10 +8,8 @@ use PHPUnit\Framework\TestCase;
 use FPHP\CaseClass;
 use FPHP\NoSuchPropertyException;
 
-class Point {
-    use CaseClass;
-
-    private $data;
+class Point extends CaseClass {
+    protected $data;
 
     function __construct(int $x, int $y) {
         $this->data = [
@@ -28,7 +26,7 @@ class CaseClassTest extends TestCase {
 
         $point = new Point($x, $y);
 
-        list($x_1, $y_1) = $point->destructure();
+        list($x_1, $y_1) = $point;
 
         $this->assertEquals($x, $x_1);
         $this->assertEquals($y, $y_1);
