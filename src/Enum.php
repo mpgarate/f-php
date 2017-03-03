@@ -5,6 +5,8 @@ namespace FPHP;
 
 require './vendor/autoload.php';
 
+class IncompleteMatchException extends \InvalidArgumentException {}
+
 class MatchCase {
     private $predicate;
     public $callback;
@@ -57,7 +59,7 @@ trait Matchable {
         if (!empty($missing)) {
             $missing_str = implode(",", $missing);
 
-            throw new \InvalidArgumentException("Missing match case for $missing_str");
+            throw new IncompleteMatchException("Missing match case for $missing_str");
         }
 
         $callback = $this->getCallbackForVal($this->val, $cases)->unwrap();

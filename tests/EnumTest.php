@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 use FPHP\Enum;
 use FPHP\Predicate;
+use FPHP\IncompleteMatchException;
 
 class Color {
     use Enum;
@@ -66,7 +67,7 @@ class EnumTest extends TestCase {
 
         $result = $color->match([
             Predicate::Or(Color::RED, Color::BLUE), function() {
-                return 'unexpected_result';
+                throw new Exception("this should not be called");
             }], [
             Color::YELLOW, function() use ($expected_result) {
                 return $expected_result;
@@ -74,5 +75,18 @@ class EnumTest extends TestCase {
         );
 
         $this->assertEquals($expected_result, $result);
+    }
+
+    public function testMatch_throwsExceptionForIncompleteCases() {
+        $color = Color::get(Color::RED);
+
+        $this->expectException(IncompleteMatchException::class);
+
+        $result = $color->match([
+            Predicate::Or(Color::RED, Color::BLUE), function() {
+                throw new Exception("this should not be called");
+            }]
+            // we have not covered Color::YELLOW
+        );
     }
 }
