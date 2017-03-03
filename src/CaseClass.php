@@ -5,7 +5,7 @@ namespace FPHP;
 
 class NoSuchPropertyException extends \Exception {}
 
-trait Tuple {
+trait CaseClass {
     private $data;
 
     public function destructure(): array {
@@ -18,7 +18,7 @@ trait Tuple {
     public function __call($name, $args) {
         return Opt::from($this->data[$name] ?? null) 
             ->unwrapOrElse(function() use ($name) {
-                throw new NoSuchPropertyException("no data named $name for this tuple");
+                throw new NoSuchPropertyException("no property $name for this case class");
             });
     }
 }

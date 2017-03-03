@@ -5,11 +5,11 @@ require './vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
 
-use FPHP\Tuple;
+use FPHP\CaseClass;
 use FPHP\NoSuchPropertyException;
 
 class Point {
-    use Tuple;
+    use CaseClass;
 
     private $data;
 
@@ -21,8 +21,8 @@ class Point {
     }
 }
 
-class TupleTest extends TestCase {
-    public function testTuple() {
+class CaseClassTest extends TestCase {
+    public function testCaseClass() {
         $x = 3;
         $y = 4;
 
@@ -37,7 +37,7 @@ class TupleTest extends TestCase {
         $this->assertEquals($y, $point->y());
     }
 
-    public function testTuple_noSuchProperty() {
+    public function testCaseClass_noSuchProperty() {
         $point = new Point(1, 2);
 
         $this->expectException(NoSuchPropertyException::class);
