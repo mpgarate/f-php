@@ -11,7 +11,7 @@ use FPHP\NoSuchPropertyException;
 class Point {
     use CaseClass;
 
-    protected $data;
+    private $data;
 
     function __construct(int $x, int $y) {
         $this->data = [

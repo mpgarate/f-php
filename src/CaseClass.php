@@ -6,6 +6,8 @@ namespace FPHP;
 class NoSuchPropertyException extends \Exception {}
 
 trait CaseClass {
+    private $data;
+
     /**
      * @throws NoSuchPropertyException
      */
