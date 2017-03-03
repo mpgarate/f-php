@@ -5,7 +5,7 @@ namespace FPHP;
 
 abstract class Predicate {
     public static function Any(): callable {
-        return function($item) { return true; };
+        return function($candidate) { return true; };
     }
 
     public static function StrictEquals($x1): callable {
