@@ -27,13 +27,29 @@ class Color {
 
 class EnumTest extends TestCase {
     public function testEnumTypeHint_doesNotThrowError() {
-        $color = Color::get(Color::YELLOW);
+        $color = Color::YELLOW();
 
         (function(Color $color): Color {
             return $color;
         })($color);
 
         $this->assertTrue(true);
+    }
+
+    public function testEnumGetName_withRawVal() {
+        $color = Color::YELLOW;
+
+        $name = Color::getName($color);
+
+        $this->assertEquals('YELLOW', $name);
+    }
+
+    public function testEnumGetName_withWrappedVal() {
+        $color = Color::YELLOW();
+
+        $name = Color::getName($color);
+
+        $this->assertEquals('YELLOW', $name);
     }
 
     public function testEnumTypeHint_throwsErrorForAnotherType() {
@@ -47,46 +63,65 @@ class EnumTest extends TestCase {
     }
 
     public function testMatchAny_matchesAValue() {
-        $color = Color::get(Color::YELLOW);
+        $color = Color::YELLOW;
 
         $expected_result = 'result_sentinel';
 
-        $result = $color->match([
-            Predicate::Any(), function() use ($expected_result) {
-                return $expected_result;
-            }]
-        );
+        $result = Color::matcher($color)
+            ->when(Predicate::Any(),
+                function() use ($expected_result) {
+                    return $expected_result;
+                })
+            ->match();
+
+        $this->assertEquals($expected_result, $result);
+    }
+
+    public function testMatchWorksWithWrappedVal() {
+        $color = Color::YELLOW();
+
+        $expected_result = 'result_sentinel';
+
+        $result = Color::matcher($color)
+            ->when(Predicate::Any(),
+                function() use ($expected_result) {
+                    return $expected_result;
+                })
+                ->match();
 
         $this->assertEquals($expected_result, $result);
     }
 
     public function testMatchOr_doesNotMatchDifferentValue() {
-        $color = Color::get(Color::YELLOW);
+        $color = Color::YELLOW;
 
         $expected_result = 'result_sentinel';
 
-        $result = $color->match([
-            Predicate::Or(Color::RED, Color::BLUE), function() {
-                throw new Exception("this should not be called");
-            }], [
-            Color::YELLOW, function() use ($expected_result) {
-                return $expected_result;
-            }]
-        );
+        $result = Color::matcher($color)
+            ->when(Predicate::Or(Color::RED, Color::BLUE),
+                function() {
+                    throw new Exception("this should not be called");
+                })
+            ->when(Color::YELLOW,
+                function() use ($expected_result) {
+                    return $expected_result;
+                })
+            ->match();
 
         $this->assertEquals($expected_result, $result);
     }
 
     public function testMatch_throwsExceptionForIncompleteCases() {
-        $color = Color::get(Color::RED);
+        $color = Color::RED;
 
         $this->expectException(IncompleteMatchException::class);
 
-        $result = $color->match([
-            Predicate::Or(Color::RED, Color::BLUE), function() {
-                throw new Exception("this should not be called");
-            }]
+        $result = Color::matcher($color)
+            ->when(Predicate::Or(Color::RED, Color::BLUE),
+                function() {
+                    throw new Exception("this should not be called");
+                })
             // we have not covered Color::YELLOW
-        );
+            ->match();
     }
 }

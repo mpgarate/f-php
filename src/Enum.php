@@ -21,38 +21,50 @@ class MatchCase {
     }
 }
 
-trait Matchable {
-    abstract public static function vals(): array;
-    abstract public static function isValue($val): array;
-    abstract public static function name($val): array;
+class Matcher {
+    private $cases = [];
 
     private $val;
+    private $vals_to_names;
 
-    private function getCallbackForVal(int $val, array $cases): Option {
-        return Iter::findFirst($cases, function(MatchCase $case) use ($val) {
+    function __construct(int $val, array $vals_to_names) {
+        $this->val = $val;
+        $this->vals_to_names = $vals_to_names;
+    }
+
+    private function isValue($val): bool {
+        return is_int($val) && isset($this->vals_to_names[$val]);
+    }
+
+    private function getCallbackForVal(int $val): Option {
+        return Iter::findFirst($this->cases, function(MatchCase $case) use ($val) {
             return $case->predicate($val);
         })->map(function($case) {
             return $case->callback;
         });
     }
 
-    public function match(...$cases) {
-        $cases = Iter::map($cases, function($case) {
-            list($predicate, $callback) = $case;
+    public function when($predicate, callable $callback): Matcher {
+        if ($this->isValue($predicate)) {
+            $predicate = Predicate::StrictEquals($predicate);
+        }
 
-            if (is_int($predicate) && self::isValue($predicate)) {
-                return new MatchCase(Predicate::StrictEquals($predicate), $callback);
-            }
+        $this->cases[] = new MatchCase($predicate, $callback);
 
-            return new MatchCase($predicate, $callback);
-        });
+        return $this;
+    }
 
-        $missing = Iter::chain(static::vals())
-            ->filter(function($val) use ($cases) {
-                return $this->getCallbackForVal($val, $cases)->isNone();
+    public function matchUnsafe() {
+        return $this->getCallbackForVal($this->val)->unwrap()();
+    }
+
+    public function match() {
+        $missing = Iter::chain(array_keys($this->vals_to_names))
+            ->filter(function($val) {
+                return $this->getCallbackForVal($val)->isNone();
             })
             ->map(function($val) {
-                return self::name($val);
+                return $this->vals_to_names[$val];
             })
             ->collect();
 
@@ -62,59 +74,63 @@ trait Matchable {
             throw new IncompleteMatchException("Missing match case for $missing_str");
         }
 
-        $callback = $this->getCallbackForVal($this->val, $cases)->unwrap();
-
-        return $callback();
+        return $this->matchUnsafe();
     }
 }
 
 trait Enum {
-    use Matchable;
-
     abstract public static function valsToNames(): array;
 
     private $val;
 
     private function __construct(int $val) {
-        if (!$this->isValidValue($val)) {
+        if (!static::isValue($val)) {
             throw new \InvalidArgumentException("invalid value for enum");
         }
 
         $this->val = $val;
     }
 
-    public static function get(int $val) {
-        static $instances = [];
+    public static function matcher($val): Matcher {
+        $val = static::toInt($val);
+        return new Matcher($val, static::valsToNames());
+    }
 
-        if (!isset($instances[$val])) {
-            $o = new static($val);
-            $instances[$val] = $o;
+    public static function fromInt(int $val) {
+        if (static::isValue($val)) {
+            return Result::ok(new static($val));
         }
 
-        return $instances[$val];
+        return Result::error("no such value for enum");
     }
 
-    public static function vals(): array {
-        return array_keys(static::valsToNames());
-    }
-
-    public static function isValue(int $val): bool {
-        return isset(static::valsToNames()[$val]);
-    }
-
-    public static function names(): array {
-        return array_values(static::valsToNames());
-    }
-
-    public static function name($val): string {
-        if (!static::isValidValue($val)) {
-            throw new \InvalidArgumentException("invalid value for enum");
-        }
-
+    public static function getName($val): string {
+        $val = static::toInt($val);
         return static::valsToNames()[$val];
     }
 
-    public static function isValidValue(int $val): bool {
+    /**
+     * @throws NoSuchPropertyException
+     */
+    public static function __callStatic($name, $args) {
+        return Option::from(array_flip(static::valsToNames())[$name] ?? null)
+            ->map(function(int $val) {
+                return new static($val);
+            })
+            ->unwrapOrElse(function() use ($name) {
+                throw new NoSuchPropertyException("no property $name for this case class");
+            });
+    }
+
+    private static function isValue(int $val): bool {
         return isset(static::valsToNames()[$val]);
+    }
+
+    private static function toInt($val): int {
+        if ($val instanceof static) {
+            return $val->val;
+        }
+
+        return $val;
     }
 }
