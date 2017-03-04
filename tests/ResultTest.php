@@ -6,6 +6,7 @@ require './vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 
 use FPHP\Result;
+use FPHP\Option;
 
 class ResultTest extends TestCase {
     public function testOk() {
@@ -89,5 +90,25 @@ class ResultTest extends TestCase {
         });
 
         $this->assertEquals($result, $mapped);
+    }
+
+    public function testFrom_returnsOkWhenOk() {
+        $result = Result::from(function(): int {
+            return 42;
+        });
+
+        $this->assertEquals(Result::ok(42), $result);
+    }
+
+    public function testFrom_returnsErrorForException() {
+        $message = "something went wrong";
+
+        $result = Result::from(function() use ($message): int {
+            throw new RuntimeException($message);
+        });
+
+        $expected_result = Result::error($message);
+
+        $this->assertEquals($expected_result, $result);
     }
 }

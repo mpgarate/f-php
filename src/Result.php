@@ -5,11 +5,19 @@ namespace FPHP;
 
 abstract class Result {
     public static function error(string $message, Error $cause = null): Result {
-        return new Error($message, $cause);
+        return new Error($message, Option::from($cause));
     }
 
     public static function ok($value): Result {
         return new Ok($value);
+    }
+
+    public static function from(callable $f): Result {
+        try {
+            return Result::ok($f());
+        } catch (\Exception $e) {
+            return Error::fromException($e);
+        }
     }
 
     abstract public function isOk(): bool;
@@ -25,9 +33,22 @@ class Error extends Result {
     private $message;
     private $cause;
 
-    function __construct(string $message, Error $cause = null) {
+    /**
+     * @param strinc message
+     * @param Option<Error>
+     */
+    function __construct(string $message, Option $cause) {
         $this->message = $message;
         $this->cause = $cause;
+    }
+
+    public static function fromException(\Exception $e): Error {
+        return new Error(
+            $e->getMessage(),
+            Option::from($e->getPrevious())->map(function(\Exception $prev) {
+                return Result::fromException($prev);
+            })
+        );
     }
 
     public function isOk(): bool {
