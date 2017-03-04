@@ -46,7 +46,7 @@ class Error extends Result {
         return new Error(
             $e->getMessage(),
             Option::from($e->getPrevious())->map(function(\Exception $prev) {
-                return Result::fromException($prev);
+                return Error::fromException($prev);
             })
         );
     }

@@ -111,4 +111,18 @@ class ResultTest extends TestCase {
 
         $this->assertEquals($expected_result, $result);
     }
+
+    public function testFrom_returnsErrorForExceptionNested() {
+        $message_1 = "message 1 sentinel";
+        $message_2 = "message 2 sentinel";
+
+        $result = Result::from(function() use ($message_1, $message_2): int {
+            $previous = new InvalidArgumentException($message_2);
+            throw new RuntimeException($message_1, 0, $previous);
+        });
+
+        $expected_result = Result::error($message_1, Result::error($message_2));
+
+        $this->assertEquals($expected_result, $result);
+    }
 }
