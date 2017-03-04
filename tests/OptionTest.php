@@ -113,7 +113,7 @@ class OptionTest extends TestCase {
         $opt = Option::none();
 
         $result = $opt->map(function($n) {
-            return $n + 1;
+            throw new Exception("this should not be reached");
         });
 
         $this->assertEquals(Option::none(), $result);

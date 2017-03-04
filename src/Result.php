@@ -15,6 +15,10 @@ abstract class Result {
     abstract public function isOk(): bool;
 
     abstract public function isError(): bool;
+
+    abstract public function map(callable $f): Result;
+
+    abstract public function flatMap(callable $f): Result;
 }
 
 class Error extends Result {
@@ -33,6 +37,14 @@ class Error extends Result {
     public function isError(): bool {
         return true;
     }
+
+    public function map(callable $f): Result {
+        return $this;
+    }
+
+    public function flatMap(callable $f): Result {
+        return $this;
+    }
 }
 
 class Ok extends Result {
@@ -48,5 +60,13 @@ class Ok extends Result {
 
     public function isError(): bool {
         return false;
+    }
+
+    public function map(callable $f): Result {
+        return Result::ok($f($this->val));
+    }
+
+    public function flatMap(callable $f): Result {
+        return $f($this->val);
     }
 }

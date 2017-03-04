@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 use FPHP\Result;
 
-class ErrTest extends TestCase {
+class ResultTest extends TestCase {
     public function testOk() {
         $result = Result::ok(1.0);
         $this->assertEquals(Result::ok(1.0), $result);
@@ -47,5 +47,47 @@ class ErrTest extends TestCase {
 
         $this->assertEquals(false, $ok->isError());
         $this->assertEquals(true, $error->isError());
+    }
+
+    public function testMap_appliesFunctionToValueForOk() {
+        $val = 3;
+        $result = Result::ok($val);
+
+        $mapped = $result->map(function($n) {
+            return $n + 1;
+        });
+
+        $this->assertEquals(Result::ok(4), $mapped);
+    }
+
+    public function testMap_returnsErrorForError() {
+        $result = Result::error("some reason");
+
+        $mapped = $result->map(function($n) {
+            throw new Exception("this should not be reached");
+        });
+
+        $this->assertEquals($result, $mapped);
+    }
+
+    public function testFlatMap_appliesFunctionToValueForOk() {
+        $val = 3;
+        $result = Result::ok($val);
+
+        $mapped = $result->flatMap(function($n) {
+            return Result::ok($n + 1);
+        });
+
+        $this->assertEquals(Result::ok(4), $mapped);
+    }
+
+    public function testFlatMap_returnsErrorForError() {
+        $result = Result::error("some reason");
+
+        $mapped = $result->flatMap(function($n) {
+            throw new Exception("this should not be reached");
+        });
+
+        $this->assertEquals($result, $mapped);
     }
 }
