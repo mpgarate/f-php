@@ -15,7 +15,7 @@ class Chain {
         $this->fn_queue[]= $fn;
     }
 
-    public function __call($name, $arguments): Chain {
+    public function __call(string $name, array $arguments): Chain {
         $this->enqueue(function(array $xs) use ($name, $arguments) {
             return Iter::$name($xs, ...$arguments);
         });
@@ -24,7 +24,7 @@ class Chain {
     }
 
     public function collect(): array {
-        return Iter::fold($this->fn_queue, $this->initial_xs, function($xs, $fn) {
+        return Iter::fold($this->fn_queue, $this->initial_xs, function(array $xs, callable $fn) {
             return $fn($xs);
         });
     }
