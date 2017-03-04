@@ -33,6 +33,27 @@ $item_c = Option::from($items['c'] ?? null)->unwrapOr(3);
 assert(3 === $item_c);
 ```
 
+## Result
+```php
+use FPHP\Result;
+
+$error_result = Result::from(function() {
+    throw new Exception("something went wrong");
+});
+
+assert($error_result->isError() === true);
+assert($error_result->getMessage() === "something went wrong");
+
+$ok_result = Result::from(function() {
+    return 42;
+})->map(function($n) {
+    return $n + 8;
+});;
+
+assert($ok_result->isOk() === true);
+assert($ok_result == Result::ok(50));
+```
+
 ## Tuple
 ```php
 use FPHP\Tuple;

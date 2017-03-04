@@ -125,4 +125,11 @@ class ResultTest extends TestCase {
 
         $this->assertEquals($expected_result, $result);
     }
+
+    public function testErrorGetMessage() {
+        $message = "message sentinel";
+        $error = Result::error($message);
+
+        $this->assertEquals($message, $error->getMessage());
+    }
 }

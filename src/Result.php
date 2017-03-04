@@ -51,6 +51,10 @@ class Error extends Result {
         );
     }
 
+    public function getMessage(): string {
+        return $this->message;
+    }
+
     public function isOk(): bool {
         return false;
     }
