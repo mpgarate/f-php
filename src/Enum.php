@@ -92,8 +92,6 @@ trait Enum {
     public static function matcher($val): Matcher {
         $val = self::toInt($val);
 
-        self::assertValidValue($val);
-
         return new Matcher($val, self::valsToNames());
     }
 
@@ -139,8 +137,10 @@ trait Enum {
 
     private static function toInt($val): int {
         if ($val instanceof static) {
-            return $val->val;
+            $val = $val->val;
         }
+
+        self::assertValidValue($val);
 
         return $val;
     }
