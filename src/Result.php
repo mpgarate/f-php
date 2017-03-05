@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace FPHP;
 
 abstract class Result {
-    public static function error(string $message, Error $cause = null): Result {
+    public static function error(string $message, Error $cause = null): Error {
         return new Error($message, Option::from($cause));
     }
 
-    public static function ok($value): Result {
+    public static function ok($value): Ok {
         return new Ok($value);
     }
 

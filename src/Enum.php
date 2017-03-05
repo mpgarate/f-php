@@ -90,7 +90,7 @@ trait Enum {
     }
 
     /**
-     * @param int|static the enum value to be matched on
+     * @param int|self the enum value to be matched on
      */
     public static function matcher($val): Matcher {
         $val = self::toInt($val);
@@ -107,7 +107,7 @@ trait Enum {
     }
 
     /**
-     * @param int|static the enum value
+     * @param int|self the enum value
      */
     public static function getName($val): string {
         $val = self::toInt($val);

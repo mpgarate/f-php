@@ -79,8 +79,8 @@ class PredicateTest extends TestCase {
     /**
      * @dataProvider provideForTestAny
      */
-    public function testAny($predicate_args, $input, $expected) {
-        $result = Predicate::Any(...$predicate_args)($input);
+    public function testAny($input, $expected) {
+        $result = Predicate::Any()($input);
 
         $this->assertEquals($expected, $result);
     }
@@ -88,22 +88,18 @@ class PredicateTest extends TestCase {
     public function provideForTestAny() {
         return [
             'true for valid input' => [
-                $predicate_args = [1, 2],
                 $input = 2,
                 $expected = false,
             ],
             'true for type mismatch' => [
-                $predicate_args = [1, 2],
                 $input = '2',
                 $expected = true,
             ],
             'true for valid input' => [
-                $predicate_args = [1, 2],
                 $input = 3,
                 $expected = true,
             ],
             'true for no predicate args' => [
-                $predicate_args = [],
                 $input = null,
                 $expected = true,
             ],
