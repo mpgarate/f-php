@@ -33,11 +33,12 @@ $result = divide(10, 2)->map(function(float $n) {
 })->unwrap();
 assert(15.0 === $result);
 
-$items = ['a' => 1, 'b' => 2];
-$item_a = Option::from($items['a'] ?? null)->unwrapOr(3);
-assert(1 === $item_a);
-$item_c = Option::from($items['c'] ?? null)->unwrapOr(3);
-assert(3 === $item_c);
+
+// construct from values that could be null
+$opt = Option::from(null);
+assert($opt == Option::none());
+$opt = Option::from(123);
+assert($opt == Option::some(123));
 ```
 
 ## Result
