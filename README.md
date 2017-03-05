@@ -6,6 +6,13 @@ php toys inspired by functional programming
 ./vendor/bin/phpunit tests/
 ```
 
+## Run phan
+```
+sh
+phan src/*
+phan -i src/* tests/*
+```
+
 ## Option
 ```php
 use FPHP\Option;
