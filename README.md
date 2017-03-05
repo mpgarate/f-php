@@ -89,3 +89,56 @@ $point = new Point(3, 4);
 assert($point->x() === 3);
 assert($point->y() === 4);
 ```
+
+## Enum
+```php
+use FPHP\Enum;
+use FPHP\Predicate;
+use FPHP\IncompleteMatchException;
+
+class Color {
+    use Enum;
+
+    const RED = 1;
+    const BLUE = 2;
+
+    public static function valsToNames(): array {
+        return [
+            self::RED => 'RED',
+            self::BLUE => 'BLUE',
+        ];
+    }
+}
+
+$color = Color::RED();
+
+// strict equality
+assert($color === Color::RED());
+
+// basic pattern matching
+$result = Color::matcher($color)
+    ->case(Color::RED,
+        function() {
+            return "got red";
+        })
+    ->case(Predicate::Any(),
+        function() {
+            return "got other";
+        })
+    ->match();
+
+assert($result === "got red");
+
+// exception thrown when match cases do not cover all values
+$e = null;
+try {
+    Color::matcher($color)
+        ->case(Color::RED, function() {})
+        // BLUE case not covered
+        ->match();
+} catch (IncompleteMatchException $ex) {
+    $e = $ex;
+}
+
+assert($e instanceof IncompleteMatchException);
+```
