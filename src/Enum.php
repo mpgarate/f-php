@@ -84,21 +84,21 @@ trait Enum {
     private $val;
 
     private function __construct(int $val) {
-        static::assertValidValue($val);
+        self::assertValidValue($val);
 
         $this->val = $val;
     }
 
     public static function matcher($val): Matcher {
-        $val = static::toInt($val);
+        $val = self::toInt($val);
 
-        static::assertValidValue($val);
+        self::assertValidValue($val);
 
-        return new Matcher($val, static::valsToNames());
+        return new Matcher($val, self::valsToNames());
     }
 
     public static function fromInt(int $val) {
-        if (static::isValue($val)) {
+        if (self::isValue($val)) {
             return Result::ok(new static($val));
         }
 
@@ -106,21 +106,21 @@ trait Enum {
     }
 
     public static function getName($val): string {
-        $val = static::toInt($val);
-        return static::valsToNames()[$val];
+        $val = self::toInt($val);
+        return self::valsToNames()[$val];
     }
 
     /**
      * @throws NoSuchPropertyException
      */
     public static function __callStatic($name, $args) {
-        return Option::from(array_flip(static::valsToNames())[$name] ?? null)
+        return Option::from(array_flip(self::valsToNames())[$name] ?? null)
             ->map(function(int $val) {
-                if (!isset(static::$singleton_instances[$val])) {
-                    static::$singleton_instances[$val] = new static($val);
+                if (!isset(self::$singleton_instances[$val])) {
+                    self::$singleton_instances[$val] = new static($val);
                 }
 
-                return static::$singleton_instances[$val];
+                return self::$singleton_instances[$val];
             })
             ->unwrapOrElse(function() use ($name) {
                 throw new NoSuchPropertyException("no property $name for this case class");
@@ -128,13 +128,13 @@ trait Enum {
     }
 
     private static function assertValidValue(int $val) {
-        if (!static::isValue($val)) {
+        if (!self::isValue($val)) {
             throw new \InvalidArgumentException("invalid value for enum");
         }
     }
 
     private static function isValue(int $val): bool {
-        return isset(static::valsToNames()[$val]);
+        return isset(self::valsToNames()[$val]);
     }
 
     private static function toInt($val): int {
