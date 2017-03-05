@@ -81,6 +81,8 @@ class Matcher {
 trait Enum {
     abstract public static function valsToNames(): array;
 
+    private static $singleton_instances = [];
+
     private $val;
 
     private function __construct(int $val) {
@@ -115,7 +117,11 @@ trait Enum {
     public static function __callStatic($name, $args) {
         return Option::from(array_flip(static::valsToNames())[$name] ?? null)
             ->map(function(int $val) {
-                return new static($val);
+                if (!isset(static::$singleton_instances[$val])) {
+                    static::$singleton_instances[$val] = new static($val);
+                }
+
+                return static::$singleton_instances[$val];
             })
             ->unwrapOrElse(function() use ($name) {
                 throw new NoSuchPropertyException("no property $name for this case class");

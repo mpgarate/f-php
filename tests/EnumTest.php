@@ -26,6 +26,13 @@ class Color {
 }
 
 class EnumTest extends TestCase {
+    public function testEquals() {
+        $color_1 = Color::RED();
+        $color_2 = Color::RED();
+
+        $this->assertEquals(true, $color_1 === $color_2);
+    }
+
     public function testEnumTypeHint_doesNotThrowError() {
         $color = Color::YELLOW();
 
