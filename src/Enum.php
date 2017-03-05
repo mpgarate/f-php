@@ -89,6 +89,9 @@ trait Enum {
         $this->val = $val;
     }
 
+    /**
+     * @param int|static the enum value to be matched on
+     */
     public static function matcher($val): Matcher {
         $val = self::toInt($val);
 
@@ -103,12 +106,17 @@ trait Enum {
         return Result::error("no such value for " . __CLASS__ . " enum");
     }
 
+    /**
+     * @param int|static the enum value
+     */
     public static function getName($val): string {
         $val = self::toInt($val);
         return self::valsToNames()[$val];
     }
 
     /**
+     * Magic method allowing things like MyEnum::MY_PROPERTY()
+     *
      * @throws NoSuchPropertyException
      */
     public static function __callStatic($name, $args) {
@@ -136,7 +144,7 @@ trait Enum {
     }
 
     private static function toInt($val): int {
-        if ($val instanceof static) {
+        if ($val instanceof self) {
             $val = $val->val;
         }
 
