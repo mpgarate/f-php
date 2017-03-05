@@ -6,8 +6,9 @@ require './vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 
 use FPHP\Enum;
-use FPHP\Predicate;
 use FPHP\IncompleteMatchException;
+use FPHP\Predicate;
+use FPHP\Result;
 
 class Color {
     use Enum;
@@ -57,6 +58,18 @@ class EnumTest extends TestCase {
         $name = Color::getName($color);
 
         $this->assertEquals('YELLOW', $name);
+    }
+
+    public function testFromInt_okForValidVal() {
+        $color = Color::fromInt(Color::RED);
+
+        $this->assertEquals(Result::ok(Color::RED()), $color);
+    }
+
+    public function testFromInt_ErrorForInvalidVal() {
+        $color = Color::fromInt(999);
+
+        $this->assertEquals(Result::error("no such value for Color enum"), $color);
     }
 
     public function testEnumTypeHint_throwsErrorForAnotherType() {

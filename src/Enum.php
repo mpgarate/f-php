@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace FPHP;
 
-require './vendor/autoload.php';
-
 class IncompleteMatchException extends \InvalidArgumentException {}
 
 class MatchCase {
@@ -103,7 +101,7 @@ trait Enum {
             return Result::ok(new static($val));
         }
 
-        return Result::error("no such value for enum");
+        return Result::error("no such value for " . __CLASS__ . " enum");
     }
 
     public static function getName($val): string {
