@@ -42,7 +42,7 @@ class Matcher {
         });
     }
 
-    public function when($predicate, callable $callback): Matcher {
+    public function case($predicate, callable $callback): Matcher {
         if ($this->isValue($predicate)) {
             $predicate = Predicate::StrictEquals($predicate);
         }
@@ -93,6 +93,11 @@ trait Enum {
 
     public static function matcher($val): Matcher {
         $val = static::toInt($val);
+
+        if (!static::isValue($val)) {
+            throw new \InvalidArgumentException("invalid value for enum");
+        }
+
         return new Matcher($val, static::valsToNames());
     }
 

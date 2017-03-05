@@ -88,7 +88,7 @@ class EnumTest extends TestCase {
         $expected_result = 'result_sentinel';
 
         $result = Color::matcher($color)
-            ->when(Predicate::Any(),
+            ->case(Predicate::Any(),
                 function() use ($expected_result) {
                     return $expected_result;
                 })
@@ -103,7 +103,7 @@ class EnumTest extends TestCase {
         $expected_result = 'result_sentinel';
 
         $result = Color::matcher($color)
-            ->when(Predicate::Any(),
+            ->case(Predicate::Any(),
                 function() use ($expected_result) {
                     return $expected_result;
                 })
@@ -118,11 +118,11 @@ class EnumTest extends TestCase {
         $expected_result = 'result_sentinel';
 
         $result = Color::matcher($color)
-            ->when(Predicate::Or(Color::RED, Color::BLUE),
+            ->case(Predicate::Or(Color::RED, Color::BLUE),
                 function() {
                     throw new Exception("this should not be called");
                 })
-            ->when(Color::YELLOW,
+            ->case(Color::YELLOW,
                 function() use ($expected_result) {
                     return $expected_result;
                 })
@@ -137,7 +137,7 @@ class EnumTest extends TestCase {
         $this->expectException(IncompleteMatchException::class);
 
         $result = Color::matcher($color)
-            ->when(Predicate::Or(Color::RED, Color::BLUE),
+            ->case(Predicate::Or(Color::RED, Color::BLUE),
                 function() {
                     throw new Exception("this should not be called");
                 })
