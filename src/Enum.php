@@ -84,9 +84,7 @@ trait Enum {
     private $val;
 
     private function __construct(int $val) {
-        if (!static::isValue($val)) {
-            throw new \InvalidArgumentException("invalid value for enum");
-        }
+        static::assertValidValue($val);
 
         $this->val = $val;
     }
@@ -94,9 +92,7 @@ trait Enum {
     public static function matcher($val): Matcher {
         $val = static::toInt($val);
 
-        if (!static::isValue($val)) {
-            throw new \InvalidArgumentException("invalid value for enum");
-        }
+        static::assertValidValue($val);
 
         return new Matcher($val, static::valsToNames());
     }
@@ -129,6 +125,12 @@ trait Enum {
             ->unwrapOrElse(function() use ($name) {
                 throw new NoSuchPropertyException("no property $name for this case class");
             });
+    }
+
+    private static function assertValidValue(int $val) {
+        if (!static::isValue($val)) {
+            throw new \InvalidArgumentException("invalid value for enum");
+        }
     }
 
     private static function isValue(int $val): bool {
