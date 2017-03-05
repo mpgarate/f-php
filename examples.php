@@ -45,11 +45,11 @@ assert($opt == Option::some(123));
 use FPHP\Result;
 
 $error_result = Result::from(function() {
-    throw new Exception("something went wrong");
+    throw new RuntimeException("something went wrong");
 });
 
 assert($error_result->isError() === true);
-assert($error_result->getMessage() === "something went wrong");
+assert($error_result->getMessage() === "RuntimeException: something went wrong");
 
 $ok_result = Result::from(function() {
     return 42;

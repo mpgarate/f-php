@@ -108,7 +108,7 @@ class ResultTest extends TestCase {
             throw new RuntimeException($message);
         });
 
-        $expected_result = Result::error($message);
+        $expected_result = Result::error("RuntimeException: $message");
 
         $this->assertEquals($expected_result, $result);
     }
@@ -122,7 +122,10 @@ class ResultTest extends TestCase {
             throw new RuntimeException($message_1, 0, $previous);
         });
 
-        $expected_result = Result::error($message_1, Result::error($message_2));
+        $expected_result = Result::error(
+            "RuntimeException: $message_1",
+            Result::error("InvalidArgumentException: $message_2")
+        );
 
         $this->assertEquals($expected_result, $result);
     }

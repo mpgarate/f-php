@@ -52,7 +52,7 @@ class Error extends Result {
 
     public static function fromException(\Exception $e): Error {
         return new Error(
-            $e->getMessage(),
+            get_class($e) . ": " . $e->getMessage(),
             Option::from($e->getPrevious())->map(function(\Exception $prev) {
                 return Error::fromException($prev);
             })
