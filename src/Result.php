@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace FPHP;
 
+class UnwrappingErrorException extends \Exception {};
+
 abstract class Result {
     public static function error(string $message, Error $cause = null): Error {
         return new Error($message, Option::from($cause));
@@ -27,6 +29,8 @@ abstract class Result {
     abstract public function map(callable $f): Result;
 
     abstract public function flatMap(callable $f): Result;
+
+    abstract public function unwrap();
 }
 
 class Error extends Result {
@@ -70,6 +74,10 @@ class Error extends Result {
     public function flatMap(callable $f): Result {
         return $this;
     }
+
+    public function unwrap() {
+        throw new UnwrappingErrorException($this->message);
+    }
 }
 
 class Ok extends Result {
@@ -93,5 +101,9 @@ class Ok extends Result {
 
     public function flatMap(callable $f): Result {
         return $f($this->val);
+    }
+
+    public function unwrap() {
+        return $this->val;
     }
 }

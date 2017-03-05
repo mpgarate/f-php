@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 use FPHP\Result;
 use FPHP\Option;
+use FPHP\UnwrappingErrorException;
 
 class ResultTest extends TestCase {
     public function testOk() {
@@ -131,5 +132,20 @@ class ResultTest extends TestCase {
         $error = Result::error($message);
 
         $this->assertEquals($message, $error->getMessage());
+    }
+
+    public function testUnwrap_throwsExceptionForError() {
+        $message = "message sentinel";
+        $error = Result::error($message);
+
+        $this->expectException(UnwrappingErrorException::class);
+        $this->expectExceptionMessage($message);
+
+        $error->unwrap();
+    }
+
+    public function testUnwrap_returnsValueForOk() {
+        $result = Result::ok(123);
+        $this->assertEquals(123, $result->unwrap());
     }
 }
