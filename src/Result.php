@@ -31,6 +31,8 @@ abstract class Result {
     abstract public function flatMap(callable $f): Result;
 
     abstract public function unwrap();
+
+    abstract public function unwrapOr($default);
 }
 
 class Error extends Result {
@@ -78,6 +80,10 @@ class Error extends Result {
     public function unwrap() {
         throw new UnwrappingErrorException($this->message);
     }
+
+    public function unwrapOr($default) {
+        return $default;
+    }
 }
 
 class Ok extends Result {
@@ -104,6 +110,10 @@ class Ok extends Result {
     }
 
     public function unwrap() {
+        return $this->val;
+    }
+
+    public function unwrapOr($default) {
         return $this->val;
     }
 }

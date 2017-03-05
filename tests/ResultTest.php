@@ -148,4 +148,14 @@ class ResultTest extends TestCase {
         $result = Result::ok(123);
         $this->assertEquals(123, $result->unwrap());
     }
+
+    public function testUnwrapOr_returnsValueForOk() {
+        $result = Result::ok(123);
+        $this->assertEquals(123, $result->unwrapOr(555));
+    }
+
+    public function testUnwrapOr_returnsFallbackForError() {
+        $result = Result::error("something bad");
+        $this->assertEquals(555, $result->unwrapOr(555));
+    }
 }
