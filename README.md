@@ -1,5 +1,5 @@
 # functional-php
-php toys inspired by function programming
+php toys inspired by functional programming
 
 ## Run tests
 ```sh
