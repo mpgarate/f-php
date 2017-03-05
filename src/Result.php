@@ -33,6 +33,8 @@ abstract class Result {
     abstract public function unwrap();
 
     abstract public function unwrapOr($default);
+
+    abstract public function unwrapOrElse(callable $f);
 }
 
 class Error extends Result {
@@ -84,6 +86,10 @@ class Error extends Result {
     public function unwrapOr($default) {
         return $default;
     }
+
+    public function unwrapOrElse(callable $f) {
+        return $f();
+    }
 }
 
 class Ok extends Result {
@@ -114,6 +120,10 @@ class Ok extends Result {
     }
 
     public function unwrapOr($default) {
+        return $this->val;
+    }
+
+    public function unwrapOrElse(callable $f) {
         return $this->val;
     }
 }

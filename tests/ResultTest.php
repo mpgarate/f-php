@@ -158,4 +158,25 @@ class ResultTest extends TestCase {
         $result = Result::error("something bad");
         $this->assertEquals(555, $result->unwrapOr(555));
     }
+
+    public function testUnwrapOrElse_returnsValueForOk() {
+        $result = Result::ok(123);
+
+        $unwrapped = $result->unwrapOrElse(function() {
+            throw new Exception("this should not be called");
+        });
+
+        $this->assertEquals(123, $unwrapped);
+    }
+
+    public function testUnwrapOrElse_callsCallbackForError() {
+        $expected_unwrapped = "sentinel";
+        $result = Result::error("something bad");
+
+        $unwrapped = $result->unwrapOrElse(function() use ($expected_unwrapped) {
+            return $expected_unwrapped;
+        });
+
+        $this->assertEquals($expected_unwrapped, $unwrapped);
+    }
 }
