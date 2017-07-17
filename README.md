@@ -7,8 +7,7 @@ php toys inspired by functional programming
 ```
 
 ## Run phan
-```
-sh
+```sh
 phan src/*
 phan -i src/* tests/*
 ```
