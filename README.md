@@ -1,5 +1,5 @@
 # functional-php
-php toys inspired by functional programming
+Functional programming concepts ported to PHP. The overhead on some of these features is unsuitable for production :)
 
 ## Run tests
 ```sh
